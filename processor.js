@@ -1,5 +1,5 @@
 module.exports = () => {
-	const start = () => ({});
+	const state = { count: 0 };
 
-	return { start };
+	return { state };
 };
