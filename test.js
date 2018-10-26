@@ -176,7 +176,6 @@ describe('Java line counter', () => {
 			});
 		});
 
-
 		it('digests thre valid lines with line & block comments', () => {
 			processor.digest(validLine);
 			processor.digest(lineComment);
@@ -211,6 +210,16 @@ describe('Java line counter', () => {
 				currentState: processor.states.regular,
 			});
 		});
-		
+
+		it('digests a JAVA file', () => {
+			const { join } = require('path');
+			const javaSample = require('fs').readFileSync(join(__dirname, 'sample.java'), 'utf-8');
+			const lines = javaSample.split('\n');
+			lines.forEach(line => processor.digest(line));
+			expect(processor.state).to.eql({
+				count: 5,
+				currentState: processor.states.regular,
+			});
+		});
 	});
 });

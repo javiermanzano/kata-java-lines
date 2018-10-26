@@ -19,7 +19,7 @@ module.exports = () => {
 		}
 
 		if (state.currentState === states.block) {
-			if (closeBlockComment(input)) {
+			if (input.length > 1 && closeBlockComment(input)) {
 				state.currentState = states.regular;
 			}
 		}
