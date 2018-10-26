@@ -1,5 +1,9 @@
 module.exports = () => {
-	const state = { count: 0 };
+	let state = { count: 0 };
 
-	return { state };
+	const digest = () => {
+		state.count++;
+	};
+
+	return { state, digest };
 };
