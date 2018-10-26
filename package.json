@@ -1,0 +1,23 @@
+{
+	"name": "kata-java-lines",
+	"version": "1.0.0",
+	"description": "",
+	"main": "processor.js",
+	"scripts": {
+		"test": "./node_modules/mocha/bin/mocha test.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/javiermanzano/kata-java-lines.git"
+	},
+	"author": "Felipe Polo Ruiz <felipe.polo@gmail.com> (https://github.com/feliun)",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/javiermanzano/kata-java-lines/issues"
+	},
+	"homepage": "https://github.com/javiermanzano/kata-java-lines#readme",
+	"devDependencies": {
+		"expect.js": "^0.3.1",
+		"mocha": "^5.2.0"
+	}
+}
