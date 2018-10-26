@@ -6,7 +6,10 @@ describe('Java line counter', () => {
 	const validLine = 'public interface Dave {}';
 	const lineComment = '// This is a comment';
 	const blockComment = {
-		oneLine: '/* This is a comment */'
+		oneLine: '/* This is a comment */',
+		start: '/* this is a start block comment',
+		inBetween: 'this is a tricky comment line without clues',
+		finish: 'this is a final block comment*/',
 	};
 
 	beforeEach(() => {
@@ -17,6 +20,7 @@ describe('Java line counter', () => {
 		it('returns the current state when a new processor is initialised', () => {
 			expect(processor.state).to.eql({
 				count: 0,
+				currentState: processor.states.regular,
 			});
 		});
 
@@ -24,6 +28,7 @@ describe('Java line counter', () => {
 			processor.digest(validLine);
 			expect(processor.state).to.eql({
 				count: 1,
+				currentState: processor.states.regular,
 			});
 		});
 
@@ -32,6 +37,7 @@ describe('Java line counter', () => {
 			processor.digest(validLine);
 			expect(processor.state).to.eql({
 				count: 2,
+				currentState: processor.states.regular,
 			});
 		});
 	});
@@ -41,6 +47,7 @@ describe('Java line counter', () => {
 			processor.digest(lineComment);
 			expect(processor.state).to.eql({
 				count: 0,
+				currentState: processor.states.regular,
 			});
 		});
 
@@ -49,6 +56,7 @@ describe('Java line counter', () => {
 			processor.digest(validLine);
 			expect(processor.state).to.eql({
 				count: 1,
+				currentState: processor.states.regular,
 			});
 		});
 
@@ -61,6 +69,7 @@ describe('Java line counter', () => {
 			processor.digest(validLine);
 			expect(processor.state).to.eql({
 				count: 4,
+				currentState: processor.states.regular,
 			});
 		});
 
@@ -68,6 +77,7 @@ describe('Java line counter', () => {
 			processor.digest(`${validLine}${lineComment}`);
 			expect(processor.state).to.eql({
 				count: 1,
+				currentState: processor.states.regular,
 			});
 		});
 
@@ -75,6 +85,7 @@ describe('Java line counter', () => {
 			processor.digest(`${lineComment}${lineComment}`);
 			expect(processor.state).to.eql({
 				count: 0,
+				currentState: processor.states.regular,
 			});
 		});
 	});
@@ -84,9 +95,39 @@ describe('Java line counter', () => {
 			processor.digest(blockComment.oneLine);
 			expect(processor.state).to.eql({
 				count: 0,
+				currentState: processor.states.regular,
 			});
 		});
 
-	});
+		it('digests an unfinished block comment with a single line', () => {
+			processor.digest(blockComment.start);
+			expect(processor.state).to.eql({
+				count: 0,
+				currentState: processor.states.block,
+			});
+		});
 
+		it('digests an unfinished block comment with multiple lines', () => {
+			processor.digest(blockComment.start);
+			expect(processor.state).to.eql({
+				count: 0,
+				currentState: processor.states.block,
+			});
+			processor.digest(blockComment.inBetween);
+			expect(processor.state).to.eql({
+				count: 0,
+				currentState: processor.states.block,
+			});
+			processor.digest(blockComment.inBetween);
+			expect(processor.state).to.eql({
+				count: 0,
+				currentState: processor.states.block,
+			});
+			processor.digest(blockComment.finish);
+			expect(processor.state).to.eql({
+				count: 0,
+				currentState: processor.states.regular,
+			});
+		});
+	});
 });
