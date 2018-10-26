@@ -123,11 +123,94 @@ describe('Java line counter', () => {
 				count: 0,
 				currentState: processor.states.block,
 			});
+		});
+
+		it('digests an finished block comment with multiple lines', () => {
+			processor.digest(blockComment.start);
+			expect(processor.state).to.eql({
+				count: 0,
+				currentState: processor.states.block,
+			});
+			processor.digest(blockComment.inBetween);
+			expect(processor.state).to.eql({
+				count: 0,
+				currentState: processor.states.block,
+			});
+			processor.digest(blockComment.inBetween);
+			expect(processor.state).to.eql({
+				count: 0,
+				currentState: processor.states.block,
+			});
 			processor.digest(blockComment.finish);
 			expect(processor.state).to.eql({
 				count: 0,
 				currentState: processor.states.regular,
 			});
 		});
+
+		it('digests two valid lines with block comments in between', () => {
+			processor.digest(validLine);
+			expect(processor.state).to.eql({
+				count: 1,
+				currentState: processor.states.regular,
+			});
+			processor.digest(blockComment.start);
+			expect(processor.state).to.eql({
+				count: 1,
+				currentState: processor.states.block,
+			});
+			processor.digest(blockComment.inBetween);
+			expect(processor.state).to.eql({
+				count: 1,
+				currentState: processor.states.block,
+			});
+			processor.digest(blockComment.finish);
+			expect(processor.state).to.eql({
+				count: 1,
+				currentState: processor.states.regular,
+			});
+			processor.digest(validLine);
+			expect(processor.state).to.eql({
+				count: 2,
+				currentState: processor.states.regular,
+			});
+		});
+
+
+		it('digests thre valid lines with line & block comments', () => {
+			processor.digest(validLine);
+			processor.digest(lineComment);
+			processor.digest(validLine);
+			processor.digest(blockComment.start);
+			processor.digest(blockComment.inBetween);
+			processor.digest(blockComment.inBetween);
+			processor.digest(blockComment.finish);
+			processor.digest(validLine);
+			processor.digest(lineComment);
+			expect(processor.state).to.eql({
+				count: 3,
+				currentState: processor.states.regular,
+			});
+		});
+
+		it('digests chaos 1', () => {
+			processor.digest(`${validLine}${lineComment}`);
+			processor.digest(lineComment);
+			processor.digest(validLine);
+			processor.digest(blockComment.start);
+			processor.digest(blockComment.inBetween);
+			processor.digest(lineComment);
+			processor.digest(validLine);
+			processor.digest(blockComment.inBetween);
+			processor.digest(blockComment.finish);
+			processor.digest(validLine);
+			processor.digest(lineComment);
+			processor.digest(`${lineComment}${validLine}`);
+			expect(processor.state).to.eql({
+				count: 3,
+				currentState: processor.states.regular,
+			});
+		});
+		
 	});
 });
